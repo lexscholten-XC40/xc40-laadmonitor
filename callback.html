@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="no-referrer">
+  <title>XC40 Laadmonitor - Volvo aanmelding</title>
+</head>
+<body>
+  <h2>Volvo-aanmelding</h2>
+  <p id="status">Aanmelding wordt verwerkt...</p>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const state = params.get("state");
+    const error = params.get("error");
+
+    history.replaceState(null, "", window.location.pathname);
+
+    const status = document.getElementById("status");
+    if (error) {
+      status.textContent = "Aanmelding mislukt: " + error;
+    } else if (code && state) {
+      status.textContent =
+        "Autorisatie ontvangen. Bewaar deze pagina open. " +
+        "De aanmelding wordt later lokaal afgerond.";
+      // De code blijft uitsluitend in het geheugen van deze pagina.
+    } else {
+      status.textContent = "Geen autorisatiecode ontvangen.";
+    }
+  </script>
+</body>
+</html>
