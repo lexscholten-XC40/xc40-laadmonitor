@@ -4,27 +4,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
   <title>XC40 Laadmonitor - Volvo aanmelding</title>
 </head>
 <body>
   <h2>Volvo-aanmelding</h2>
   <p id="status">Aanmelding wordt verwerkt...</p>
+  <button id="copy" hidden>Kopieer aanmeldgegevens</button>
+
   <script>
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const state = params.get("state");
     const error = params.get("error");
 
+    // Verwijder de gegevens direct uit de adresbalk.
     history.replaceState(null, "", window.location.pathname);
 
     const status = document.getElementById("status");
+    const button = document.getElementById("copy");
+
     if (error) {
       status.textContent = "Aanmelding mislukt: " + error;
     } else if (code && state) {
       status.textContent =
-        "Autorisatie ontvangen. Bewaar deze pagina open. " +
-        "De aanmelding wordt later lokaal afgerond.";
-      // De code blijft uitsluitend in het geheugen van deze pagina.
+        "Autorisatie ontvangen. Klik op de knop en " +
+        "plak de gegevens straks in het Python-programma.";
+
+      button.hidden = false;
+      button.addEventListener("click", async () => {
+        const data = JSON.stringify({ code, state });
+        try {
+          await navigator.clipboard.writeText(data);
+          status.textContent =
+            "Aanmeldgegevens gekopieerd. Ga terug naar Python.";
+        } catch (e) {
+          status.textContent =
+            "Kopiëren mislukt. Probeer het opnieuw.";
+        }
+      });
     } else {
       status.textContent = "Geen autorisatiecode ontvangen.";
     }
